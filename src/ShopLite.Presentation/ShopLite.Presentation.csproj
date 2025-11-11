@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0-preview.4.24267.6" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../ShopLite.Application/ShopLite.Application.csproj" />
+    <ProjectReference Include="../ShopLite.Infrastructure/ShopLite.Infrastructure.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Target Name="CopyInfrastructureAssembly" AfterTargets="Build">
+    <ItemGroup>
+      <InfrastructureAssemblies Include="../ShopLite.Infrastructure/bin/$(Configuration)/net9.0/ShopLite.Infrastructure.dll" />
+      <InfrastructureAssemblies Include="../ShopLite.Infrastructure/bin/$(Configuration)/net9.0/ShopLite.Infrastructure.pdb" Condition="Exists('../ShopLite.Infrastructure/bin/$(Configuration)/net9.0/ShopLite.Infrastructure.pdb')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(InfrastructureAssemblies)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" Condition="@(InfrastructureAssemblies) != ''" />
+  </Target>
+</Project>
