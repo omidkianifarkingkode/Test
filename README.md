@@ -77,6 +77,18 @@ Look for TODO: comments and missing logic.
   - Add input validation (FluentValidation or manual)
   - Add pagination/filtering for /api/products
 
+🌿 Branching Instructions
+
+Before making any changes:
+
+Create a new branch using your full name:
+```bash
+git checkout -b your-name
+```
+Commit your work normally to this branch.
+
+Do not merge your branch into main — just push it or send it as-is for review.
+
 ---
 
 ## ✅ Completion Criteria
