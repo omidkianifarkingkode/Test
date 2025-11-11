@@ -6,31 +6,27 @@ namespace ShopLite.Infrastructure.Services;
 
 public class DataSeeder : IDataSeeder
 {
-    private readonly IDbContextFactory<AppDbContext> _factory;
+    private readonly AppDbContext _db;
 
-    public DataSeeder(IDbContextFactory<AppDbContext> factory)
+    public DataSeeder(AppDbContext db)
     {
-        _factory = factory;
+        _db = db;
     }
 
     public async Task SeedAsync(CancellationToken ct)
     {
-        await using var db = await _factory.CreateDbContextAsync(ct);
-
-        if (await db.Products.AnyAsync(ct))
-        {
+        if (await _db.Products.AnyAsync(ct))
             return;
-        }
 
-        db.Products.AddRange(
+        _db.Products.AddRange(
             new Product("Phone", 500, 5),
             new Product("Laptop", 1500, 3),
             new Product("Mouse", 20, 50));
 
-        db.Customers.AddRange(
+        _db.Customers.AddRange(
             new Customer("Ali", "ali@example.com"),
             new Customer("Sara", "sara@example.com"));
 
-        await db.SaveChangesAsync(ct);
+        await _db.SaveChangesAsync(ct);
     }
 }

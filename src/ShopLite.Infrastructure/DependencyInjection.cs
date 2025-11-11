@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
@@ -10,19 +9,22 @@ namespace ShopLite.Infrastructure;
 
 public static class DependencyInjection
 {
-    private static readonly InMemoryDatabaseRoot DatabaseRoot = new();
-
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("shoplite", DatabaseRoot));
-        services.AddDbContextFactory<AppDbContext>(options => options.UseInMemoryDatabase("shoplite", DatabaseRoot));
+        // Use a simple in-memory database for demo
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseInMemoryDatabase("shoplite"));
+
         services.AddScoped<IProductRepository, EfProductRepository>();
         services.AddScoped<ICustomerRepository, EfCustomerRepository>();
         services.AddScoped<IOrderRepository, EfOrderRepository>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IProductAppService, ProductAppService>();
         services.AddScoped<IReportingService, ReportingService>();
-        services.AddSingleton<IDataSeeder, DataSeeder>();
+
+        // Seeder depends on AppDbContext, so it must be Scoped
+        services.AddScoped<IDataSeeder, DataSeeder>();
+
         return services;
     }
 }

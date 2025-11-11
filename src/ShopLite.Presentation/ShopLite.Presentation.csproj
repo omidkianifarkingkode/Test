@@ -10,15 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../ShopLite.Application/ShopLite.Application.csproj" />
-    <ProjectReference Include="../ShopLite.Infrastructure/ShopLite.Infrastructure.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
+    <ProjectReference Include="..\ShopLite.Infrastructure\ShopLite.Infrastructure.csproj" />
   </ItemGroup>
-  <Target Name="CopyInfrastructureAssembly" AfterTargets="Build">
-    <ItemGroup>
-      <InfrastructureAssemblies Include="../ShopLite.Infrastructure/bin/$(Configuration)/net9.0/ShopLite.Infrastructure.dll" />
-      <InfrastructureAssemblies Include="../ShopLite.Infrastructure/bin/$(Configuration)/net9.0/ShopLite.Infrastructure.pdb" Condition="Exists('../ShopLite.Infrastructure/bin/$(Configuration)/net9.0/ShopLite.Infrastructure.pdb')" />
-    </ItemGroup>
-    <Copy SourceFiles="@(InfrastructureAssemblies)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" Condition="@(InfrastructureAssemblies) != ''" />
-  </Target>
+  
 </Project>
