@@ -14,7 +14,7 @@ public class EfCustomerRepository : ICustomerRepository
     }
 
     public Task<Customer?> GetByIdAsync(Guid id, CancellationToken ct) =>
-        _db.Customers.FindAsync(new object?[] { id }, ct).AsTask();
+        _db.Customers.FindAsync([id], ct).AsTask();
 
     public async Task AddAsync(Customer customer, CancellationToken ct)
     {

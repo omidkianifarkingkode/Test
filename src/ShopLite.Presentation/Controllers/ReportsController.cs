@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
 
 namespace ShopLite.Presentation.Controllers;
@@ -8,10 +10,19 @@ namespace ShopLite.Presentation.Controllers;
 public class ReportsController : ControllerBase
 {
     private readonly IReportingService _reports;
+    private readonly ICustomerRepository _customers;
 
-    public ReportsController(IReportingService reports)
+    public ReportsController(IReportingService reports, ICustomerRepository customers)
     {
         _reports = reports;
+        _customers = customers;
+    }
+
+    [HttpGet("customers")]
+    public async Task<IActionResult> AllCustomers(CancellationToken ct = default)
+    {
+        var result = await _customers.Query().ToListAsync(ct);
+        return Ok(result);
     }
 
     [HttpGet("top-customers")]

@@ -1,5 +1,3 @@
-using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using ShopLite.Application.Services;
 using ShopLite.Infrastructure;
 
@@ -13,19 +11,14 @@ builder.Services.AddInfrastructure();
 
 var app = builder.Build();
 
-await using (var scope = app.Services.CreateAsyncScope())
-{
-    var seeder = scope.ServiceProvider.GetService<IDataSeeder>();
-    if (seeder is not null)
-    {
-        await seeder.SeedAsync(CancellationToken.None);
-    }
-}
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.RoutePrefix = string.Empty;
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ShopLite API v1");
+    });
 }
 
 app.MapControllers();

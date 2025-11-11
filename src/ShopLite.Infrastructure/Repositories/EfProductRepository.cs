@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using ShopLite.Application.Interfaces;
 using ShopLite.Domain.Entities;
 
@@ -14,7 +13,7 @@ public class EfProductRepository : IProductRepository
     }
 
     public Task<Product?> GetByIdAsync(Guid id, CancellationToken ct) =>
-        _db.Products.FindAsync(new object?[] { id }, ct).AsTask();
+        _db.Products.FindAsync([id], ct).AsTask();
 
     public async Task AddAsync(Product product, CancellationToken ct)
     {
