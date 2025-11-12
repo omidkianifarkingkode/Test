@@ -1,5 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
+using ShopLite.Domain.Entities;
 
 namespace ShopLite.Infrastructure.Services;
 
@@ -22,6 +26,19 @@ public class ReportingService : IReportingService
         // 3) Filter customers whose total order amount >= minimumTotal.
         // 4) Map the results to TopCustomerDto (Name, TotalAmount).
         // 5) Sort descending by TotalAmount and return as a read-only collection.
-        throw new NotImplementedException();
+
+        var customers =  _customers.Query().ToList();
+        List<TopCustomerDto> items = [];
+
+        for(var i = 0; i < customers.Count; i ++){
+            var sum = _orders.Query().Where(o => o.CustomerId == customers[i].Id).Sum(o => o.Amount);
+            if (sum >= minimumTotal)
+            {
+                items.Add(new TopCustomerDto(customers[i].Name, sum));
+            }
+    
+        }
+
+        return items.OrderByDescending(x=>x.TotalAmount).ToList();
     }
 }

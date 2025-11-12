@@ -1,3 +1,4 @@
+using System.Data.Common;
 using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
 using ShopLite.Domain.Entities;
@@ -19,12 +20,22 @@ public class OrderService : IOrderService
 
     public async Task<Guid> PlaceOrderAsync(Guid customerId, Guid productId, int quantity, CancellationToken ct)
     {
-        // TODO:
-        // 1) Ensure Customer and Product exist; throw InvalidOperationException if not.
-        // 2) Call product.DecreaseStock(quantity).
-        // 3) Calculate amount = product.Price * quantity.
-        // 4) Create Order and save.
-        // 5) Update Product.
-        throw new NotImplementedException();
+        var customer = await _customers.GetByIdAsync(customerId, ct);
+        
+        if (customer == null)
+            throw new InvalidOperationException();
+
+         var product = await _products.GetByIdAsync(productId,ct);
+
+        if (product == null)
+            throw new InvalidOperationException();
+
+        product.Validate();
+
+        var order = new Order(customerId, productId, quantity,product.Price*quantity);
+        await _orders.AddAsync(order, ct);
+        await _products.UpdateAsync(product, ct);
+
+        return order.Id;
     }
 }

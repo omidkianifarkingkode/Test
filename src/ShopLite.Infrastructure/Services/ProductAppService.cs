@@ -31,6 +31,7 @@ public class ProductAppService : IProductAppService
         }
 
         var product = new Product(dto.Name, dto.Price, dto.Stock);
+        product.Validate();
         await _products.AddAsync(product, ct);
         return product.Id;
     }

@@ -8,8 +8,15 @@ public class Customer
 
     public Customer(string name, string email)
     {
-        // TODO: validate name not empty, email contains '@'
         Name = name;
         Email = email;
+    }
+    public void Validate()
+    {
+        if (Email == string.Empty || !Email.Contains('@'))
+            throw new ArgumentException("Invalid email format.");
+
+        if (Name == string.Empty)
+            throw new ArgumentException("Invalid name.");
     }
 }
