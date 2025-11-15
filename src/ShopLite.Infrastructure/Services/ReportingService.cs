@@ -56,11 +56,7 @@ public class ReportingService : IReportingService
             ORDER BY TotalAmount DESC
             """;
 
-        var rows = await _db.Database.SqlQueryRaw<ProductSalesRow>(sql).ToListAsync(ct);
-
-        return rows
-            .Select(row => new ProductSalesDto(row.ProductName, row.TotalQuantity, row.TotalAmount))
-            .ToList();
+        throw new PlatformNotSupportedException();
     }
 
     private sealed class ProductSalesRow
