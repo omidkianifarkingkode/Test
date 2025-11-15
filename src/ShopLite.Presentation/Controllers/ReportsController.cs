@@ -31,4 +31,17 @@ public class ReportsController : ControllerBase
         var result = await _reports.GetTopCustomersAsync(minTotal, ct);
         return Ok(result);
     }
+
+    [HttpGet("product-sales")]
+    public async Task<IActionResult> ProductSales(CancellationToken ct = default)
+    {
+        // NOTE:
+        // The current project uses the EF Core InMemory provider,
+        // which does NOT support raw SQL queries.
+        // The implementation of GetProductSalesRawAsync will be
+        // evaluated by code review, not by running this endpoint.
+
+        var result = await _reports.GetProductSalesRawAsync(ct);
+        return Ok(result);
+    }
 }

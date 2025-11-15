@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
@@ -22,7 +22,9 @@ public static class DependencyInjection
         services.AddScoped<IProductAppService, ProductAppService>();
         services.AddScoped<IReportingService, ReportingService>();
 
-        // Seeder depends on AppDbContext, so it must be Scoped
+        // TODO : Register the queue implementation here
+        // IQueue<> → InMemoryQueue<>
+
         services.AddScoped<IDataSeeder, DataSeeder>();
 
         return services;

@@ -17,7 +17,11 @@ public class Product
 
     public void DecreaseStock(int qty)
     {
-        // TODO: qty > 0, throw if insufficient stock
+        // TODO:
+        // - Validate qty > 0
+        // - If qty is greater than available Stock, throw an exception
+        // - Otherwise subtract qty from Stock
+
         throw new NotImplementedException();
     }
 }

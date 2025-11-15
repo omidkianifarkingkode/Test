@@ -25,14 +25,7 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateProductDto dto, CancellationToken ct)
     {
-        try
-        {
-            var id = await _products.CreateAsync(dto, ct);
-            return CreatedAtAction(nameof(Get), new { id }, new { productId = id });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var id = await _products.CreateAsync(dto, ct);
+        return CreatedAtAction(nameof(Get), new { id }, new { productId = id });
     }
 }

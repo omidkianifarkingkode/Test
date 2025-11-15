@@ -10,8 +10,9 @@ Your task is to extend and complete this minimal project so it behaves like a si
 Implement a few missing pieces and improve code quality where noted.  
 Focus on **correctness, clarity, and testability** rather than completeness or fancy UI.
 
-You have about **1–2 hours**.  
-Deliver what you can confidently explain — partial but well-structured work is preferred over rushed completeness.
+You have about **2 hours** for this exercise.
+You are NOT expected to finish every task. Focus on correctness,
+code quality, and reasoning. Partial but solid work is perfectly fine.
 
 ---
 
@@ -51,32 +52,46 @@ Swagger setup
 ---
 
 ### 🧭 Your Tasks
-Look for TODO: comments and missing logic.
+Follow the step-by-step instructions already written in TODO comments:
 
 1. Complete Domain Validation
-  - Implement or fix validation in:
+  -- Implement or fix validation in:
   - Customer – name and email validation
   - Product – price, stock validation
   - Product.DecreaseStock() – throw when insufficient stock
 
 2. Implement OrderService.PlaceOrderAsync
-  - Steps are listed as comments in the method:
   - Validate Customer & Product existence
   - Decrease stock
   - Compute total amount
   - Save order & update product
+  * Hint: IQueue is resolved inside the method; see Task 5
 
 3. Implement ReportingService.GetTopCustomersAsync
+  - Implement this using EF Core LINQ query (do not use raw SQL here)
   - For each customer, sum their total order amount
   - Filter where total ≥ minimumTotal
   - Return ordered list as TopCustomerDto
+  
+4. Implement ReportingService.GetProductSalesRawAsync
+  - Write a raw SQL query that joins Products and Orders
+  - Group by product and calculate TotalQuantity and TotalAmount
+  - Map results to ProductSalesDto and return ordered list
+  * Note: the current project uses the EF Core InMemory provider, which does not support raw SQL at runtime. This task will be verified by **code review only**, not by executing the query.
 
-4. (Optional Bonus Ideas) If time allows:
-  - Add basic unit tests for OrderService and Product.DecreaseStock
-  - Handle concurrent stock updates (optimistic concurrency or transaction)
-  - Add input validation (FluentValidation or manual)
-  - Add pagination/filtering for /api/products
+5. Implement the IQueue<T> and Register It
+  -- A generic FIFO queue interface exists under Application:
+  - Find existing implementation "InMemoryQueue" in Infrastructure
+  - Implement it using your own FIFO logic (do not use built-in Queue<T> or similar ready-made queue types)
+  - Register it in DI (IQueue<> → InMemoryQueue<>)
+  - Resolve it inside OrderService.PlaceOrderAsync using IServiceProvider
+  - Enqueue the created order.Id
 
+6. Add Global Exception Handling Middleware
+  -- A middleware file already exists with an implemented HandleExceptionAsync:
+  - Implement InvokeAsync as described in the TODO comments
+  - Enable the middleware in Program.cs (look for the TODO comment)
+  
 🌿 Branching Instructions
 
 Before making any changes:
@@ -121,6 +136,8 @@ GET /api/products
 POST /api/orders
 
 GET /api/reports/top-customers
+
+and the other APIs
 
 ---
 

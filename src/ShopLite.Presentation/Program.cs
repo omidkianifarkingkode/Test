@@ -1,5 +1,6 @@
 using ShopLite.Application.Services;
 using ShopLite.Infrastructure;
+using ShopLite.Presentation.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "ShopLite API v1");
     });
 }
+
+// TODO : enable global exception handling middleware here.
+// app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 

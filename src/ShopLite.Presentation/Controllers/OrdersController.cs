@@ -24,18 +24,7 @@ public class OrdersController : ControllerBase
             return BadRequest(new { message = "Quantity must be greater than zero." });
         }
 
-        try
-        {
-            var id = await _orders.PlaceOrderAsync(body.CustomerId, body.ProductId, body.Quantity, ct);
-            return CreatedAtAction(nameof(Place), new { id }, new { orderId = id });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var id = await _orders.PlaceOrderAsync(body.CustomerId, body.ProductId, body.Quantity, ct);
+        return CreatedAtAction(nameof(Place), new { id }, new { orderId = id });
     }
 }
