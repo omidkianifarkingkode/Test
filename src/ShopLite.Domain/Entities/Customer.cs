@@ -8,7 +8,16 @@ public class Customer
 
     public Customer(string name, string email)
     {
-        // TODO: validate name not empty, email contains '@'
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Customer name cannot be empty.", nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+        {
+            throw new ArgumentException("Customer email must contain '@'.", nameof(email));
+        }
+
         Name = name;
         Email = email;
     }

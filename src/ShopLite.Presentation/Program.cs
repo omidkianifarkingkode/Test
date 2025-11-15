@@ -22,8 +22,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// TODO : enable global exception handling middleware here.
-// app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 app.MapControllers();
 

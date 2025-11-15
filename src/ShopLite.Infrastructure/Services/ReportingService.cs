@@ -1,9 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
 using ShopLite.Application.DTOs;
 using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
-using ShopLite.Domain.Entities;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ShopLite.Infrastructure.Services;
 
@@ -22,13 +22,23 @@ public class ReportingService : IReportingService
 
     public async Task<IReadOnlyCollection<TopCustomerDto>> GetTopCustomersAsync(decimal minimumTotal, CancellationToken ct)
     {
-        // TODO:
-        // 1) Query all customers.
-        // 2) For each customer, calculate their total order amount by summing all related orders.
-        // 3) Filter customers whose total order amount >= minimumTotal.
-        // 4) Map the results to TopCustomerDto (Name, TotalAmount).
-        // 5) Sort descending by TotalAmount and return as a read-only collection.
-        throw new NotImplementedException();
+        var customers = await _db.Customers
+            .GroupJoin(
+                _db.Orders,
+                customer => customer.Id,
+                order => order.CustomerId,
+                (customer, orders) => new
+                {
+                    customer.Name,
+                    TotalAmount = orders.Sum(o => (decimal?)o.Amount) ?? 0m
+                })
+            .Where(x => x.TotalAmount >= minimumTotal)
+            .OrderByDescending(x => x.TotalAmount)
+            .ThenBy(x => x.Name)
+            .Select(x => new TopCustomerDto(x.Name, x.TotalAmount))
+            .ToListAsync(ct);
+
+        return customers;
     }
 
     //  Note: the current project uses the EF Core InMemory provider,
@@ -36,13 +46,27 @@ public class ReportingService : IReportingService
     //  This task will be verified by** code review only**, not by executing the query.
     public async Task<IReadOnlyCollection<ProductSalesDto>> GetProductSalesRawAsync(CancellationToken ct)
     {
-        // TODO: implement this method using RAW SQL.
-        // Requirements:
-        // - Join Products and Orders.
-        // - Group by product.
-        // - Select ProductName, TotalQuantity (SUM of Quantity), TotalAmount (SUM of Amount).
-        // - Order by TotalAmount DESC.
+        const string sql = """
+            SELECT p.Name AS ProductName,
+                   SUM(o.Quantity) AS TotalQuantity,
+                   SUM(o.Amount) AS TotalAmount
+            FROM Products AS p
+            INNER JOIN Orders AS o ON o.ProductId = p.Id
+            GROUP BY p.Name
+            ORDER BY TotalAmount DESC
+            """;
 
-        throw new NotImplementedException();
+        var rows = await _db.Database.SqlQueryRaw<ProductSalesRow>(sql).ToListAsync(ct);
+
+        return rows
+            .Select(row => new ProductSalesDto(row.ProductName, row.TotalQuantity, row.TotalAmount))
+            .ToList();
+    }
+
+    private sealed class ProductSalesRow
+    {
+        public string ProductName { get; set; } = string.Empty;
+        public int TotalQuantity { get; set; }
+        public decimal TotalAmount { get; set; }
     }
 }

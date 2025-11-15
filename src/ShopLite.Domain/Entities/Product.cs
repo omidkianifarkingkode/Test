@@ -9,7 +9,21 @@ public class Product
 
     public Product(string name, decimal price, int stock)
     {
-        // TODO: validate name not empty, price >= 0, stock >= 0
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException("Product name cannot be empty.", nameof(name));
+        }
+
+        if (price < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(price), "Price cannot be negative.");
+        }
+
+        if (stock < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(stock), "Stock cannot be negative.");
+        }
+
         Name = name;
         Price = price;
         Stock = stock;
@@ -17,11 +31,16 @@ public class Product
 
     public void DecreaseStock(int qty)
     {
-        // TODO:
-        // - Validate qty > 0
-        // - If qty is greater than available Stock, throw an exception
-        // - Otherwise subtract qty from Stock
+        if (qty <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(qty), "Quantity must be greater than zero.");
+        }
 
-        throw new NotImplementedException();
+        if (qty > Stock)
+        {
+            throw new InvalidOperationException("Insufficient stock available.");
+        }
+
+        Stock -= qty;
     }
 }

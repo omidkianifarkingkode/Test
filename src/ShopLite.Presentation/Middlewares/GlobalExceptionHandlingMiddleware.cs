@@ -19,12 +19,15 @@ public class GlobalExceptionHandlingMiddleware
     
     public async Task InvokeAsync(HttpContext context)
     {
-        // TODO : implement this method.
-        // Requirements:
-        // - Wrap _next(context) in try/catch.
-        // - On exception, log it and call HandleExceptionAsync.
-
-        throw new NotImplementedException();
+        try
+        {
+            await _next(context);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unhandled exception occurred while processing the request.");
+            await HandleExceptionAsync(context, ex);
+        }
     }
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)

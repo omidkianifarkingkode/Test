@@ -1,46 +1,42 @@
-﻿using ShopLite.Application.Services;
+using System;
+using System.Collections.Generic;
+
+using ShopLite.Application.Services;
 
 namespace ShopLite.Infrastructure.Services;
 
 public class InMemoryQueue<T> : IQueue<T>
 {
-    // TODO: Implement this as a simple FIFO queue using your own logic.
-    // Do NOT use built-in Queue<T> or other ready-made queue structures.
-    // After implementing it, register it in DI: IQueue<> → InMemoryQueue<>.
+    private readonly List<T> _items = new();
 
     public void Enqueue(T item)
     {
-        // TODO: add item to internal storage structure
-        throw new NotImplementedException();
+        _items.Add(item);
     }
 
     public T Dequeue()
     {
-        // TODO: remove and return the oldest inserted item (FIFO)
-        throw new NotImplementedException();
+        if (_items.Count == 0)
+        {
+            throw new InvalidOperationException("Queue is empty.");
+        }
+
+        var item = _items[0];
+        _items.RemoveAt(0);
+        return item;
     }
 
     public T Peek()
     {
-        // TODO: return the oldest item without removing it
-        throw new NotImplementedException();
+        if (_items.Count == 0)
+        {
+            throw new InvalidOperationException("Queue is empty.");
+        }
+
+        return _items[0];
     }
 
-    public int Count
-    {
-        get
-        {
-            // TODO: return number of stored items
-            throw new NotImplementedException();
-        }
-    }
+    public int Count => _items.Count;
 
-    public bool IsEmpty
-    {
-        get
-        {
-            // TODO: return true when no items remain
-            throw new NotImplementedException();
-        }
-    }
+    public bool IsEmpty => _items.Count == 0;
 }

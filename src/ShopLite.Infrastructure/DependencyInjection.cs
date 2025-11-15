@@ -22,8 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IProductAppService, ProductAppService>();
         services.AddScoped<IReportingService, ReportingService>();
 
-        // TODO : Register the queue implementation here
-        // IQueue<> → InMemoryQueue<>
+        services.AddSingleton(typeof(IQueue<>), typeof(InMemoryQueue<>));
 
         services.AddScoped<IDataSeeder, DataSeeder>();
 
