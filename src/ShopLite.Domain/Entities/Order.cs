@@ -16,7 +16,9 @@ public class Order
         // TODO: quantity > 0, amount >= 0
         CustomerId = customerId;
         ProductId = productId;
-        Quantity = quantity;
-        Amount = amount;
+        if (quantity > 0)
+            Quantity = quantity;
+        if (amount >= 0)
+            Amount = amount;
     }
 }

@@ -24,8 +24,20 @@ public class GlobalExceptionHandlingMiddleware
         // - Wrap _next(context) in try/catch.
         // - On exception, log it and call HandleExceptionAsync.
 
+        try
+        {
+            if (context != null)
+                _next(context);
+            else
+                throw new Exception("NotFound");
+        }
+        catch(Exception ex)
+        {
+            await HandleExceptionAsync(context, ex);
+        }
+
         throw new NotImplementedException();
-    }
+        }
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {

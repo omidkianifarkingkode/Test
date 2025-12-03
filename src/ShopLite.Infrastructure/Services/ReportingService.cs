@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ShopLite.Application.DTOs;
 using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
@@ -28,7 +29,15 @@ public class ReportingService : IReportingService
         // 3) Filter customers whose total order amount >= minimumTotal.
         // 4) Map the results to TopCustomerDto (Name, TotalAmount).
         // 5) Sort descending by TotalAmount and return as a read-only collection.
-        throw new NotImplementedException();
+        var orders = _orders.Query();
+        var customers = _customers.Query()
+            .Where(c => orders.Where(o => o.CustomerId == c.Id)
+            .Select(o => o.Amount).Sum() >= minimumTotal);
+        var results = customers.Select(c => new TopCustomerDto(c.Name, orders.Where(o => o.CustomerId == c.Id)
+            .Select(o => o.Amount).Sum()))
+            .OrderByDescending(r => r.TotalAmount).ToList();
+
+        return results;
     }
 
     //  Note: the current project uses the EF Core InMemory provider,
@@ -43,6 +52,23 @@ public class ReportingService : IReportingService
         // - Select ProductName, TotalQuantity (SUM of Quantity), TotalAmount (SUM of Amount).
         // - Order by TotalAmount DESC.
 
-        throw new NotImplementedException();
+        var products = from p in _db.Products
+                join o in _db.Orders
+            on p.Id equals o.ProductId into grouped
+                select new
+                {
+                    product= p,
+                    orders = grouped.ToList()
+                };
+        var result = products.Select(p =>
+            new ProductSalesDto(
+                p.product.Name,
+                p.orders.Select(o => o.Quantity).Sum(),
+                p.orders.Select(o => o.Amount).Sum()))
+            .OrderBy(p => p.TotalAmount)
+            .ToList();
+
+        return result;
+
     }
 }

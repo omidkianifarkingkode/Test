@@ -10,9 +10,18 @@ public class Product
     public Product(string name, decimal price, int stock)
     {
         // TODO: validate name not empty, price >= 0, stock >= 0
-        Name = name;
-        Price = price;
-        Stock = stock;
+        if (!string.IsNullOrEmpty(name))
+            Name = name;
+        else
+            throw new Exception("name cant to be null");
+
+        if (price >= 0)
+            Price = price;
+        else throw new Exception("price can not to be minze");
+        if (stock >= 0)
+            Stock = stock;
+        else throw new Exception("stock can not to be minze");
+        
     }
 
     public void DecreaseStock(int qty)
@@ -21,7 +30,9 @@ public class Product
         // - Validate qty > 0
         // - If qty is greater than available Stock, throw an exception
         // - Otherwise subtract qty from Stock
-
-        throw new NotImplementedException();
+        if (qty > 0 && qty < Stock)
+            Stock -= qty;
+        else if (qty > Stock)
+            throw new NotImplementedException("qty bigger than stock");
     }
 }

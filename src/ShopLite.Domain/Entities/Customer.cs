@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ShopLite.Domain.Entities;
 
 public class Customer
@@ -6,10 +8,13 @@ public class Customer
     public string Name { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
 
-    public Customer(string name, string email)
+    public Customer(string name, [EmailAddress] string email)
     {
         // TODO: validate name not empty, email contains '@'
-        Name = name;
+        if (!string.IsNullOrEmpty(name))
+            Name = name;
+        else
+            throw new Exception("name cant be null");
         Email = email;
     }
 }
