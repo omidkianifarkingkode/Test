@@ -7,40 +7,41 @@ public class InMemoryQueue<T> : IQueue<T>
     // TODO: Implement this as a simple FIFO queue using your own logic.
     // Do NOT use built-in Queue<T> or other ready-made queue structures.
     // After implementing it, register it in DI: IQueue<> → InMemoryQueue<>.
+    private readonly List<T> _buffer = new();
+    private int _head = 0;
 
     public void Enqueue(T item)
     {
         // TODO: add item to internal storage structure
-        throw new NotImplementedException();
+        _buffer.Add(item);
+
     }
 
     public T Dequeue()
     {
         // TODO: remove and return the oldest inserted item (FIFO)
-        throw new NotImplementedException();
+        if (IsEmpty)
+            throw new InvalidOperationException("Queue is empty");
+        var item = _buffer[_head++];
+        if (_head > 32 && _head * 2 >= _buffer.Count)
+        {
+            _buffer.RemoveRange(0, _head);
+            _head = 0;
+        }
+        return item;
     }
 
     public T Peek()
     {
         // TODO: return the oldest item without removing it
-        throw new NotImplementedException();
+        if (IsEmpty)
+        throw new InvalidOperationException("Queue is empty");
+
+        return _buffer[_head];
     }
 
-    public int Count
-    {
-        get
-        {
-            // TODO: return number of stored items
-            throw new NotImplementedException();
-        }
-    }
+    public int Count => _buffer.Count - _head;
 
-    public bool IsEmpty
-    {
-        get
-        {
-            // TODO: return true when no items remain
-            throw new NotImplementedException();
-        }
-    }
+    public bool IsEmpty => Count == 0;
+
 }

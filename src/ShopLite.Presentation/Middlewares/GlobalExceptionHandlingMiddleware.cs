@@ -25,18 +25,17 @@ public class GlobalExceptionHandlingMiddleware
         // - On exception, log it and call HandleExceptionAsync.
         try
         {
-            
+            await _next(context);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            _logger.LogError(e, "UnHandled exception");
+            await HandleExceptionAsync(context, e);
         }
 
-        throw new NotImplementedException();
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         HttpStatusCode status;
         string error;

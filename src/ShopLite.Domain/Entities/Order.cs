@@ -14,6 +14,12 @@ public class Order
     public Order(Guid customerId, Guid productId, int quantity, decimal amount)
     {
         // TODO: quantity > 0, amount >= 0
+        if (quantity <= 0)
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be greater than zero.");
+
+        if (amount < 0)
+            throw new ArgumentOutOfRangeException(nameof(amount), "Amount must be greater than or equal to 0.");
+
         CustomerId = customerId;
         ProductId = productId;
         Quantity = quantity;

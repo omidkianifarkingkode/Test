@@ -14,7 +14,7 @@ public class Customer
     public Customer(string name, string email)
     {
         // TODO: validate name not empty, email contains '@'
-        if(email.Contains("@"))
+        if(string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
             throw new ArgumentException("Invalid email address");
         Name = name;
         Email = email;

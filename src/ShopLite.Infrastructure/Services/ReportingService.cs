@@ -5,6 +5,7 @@ using ShopLite.Domain.Entities;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 
 namespace ShopLite.Infrastructure.Services;
 
@@ -21,7 +22,8 @@ public class ReportingService : IReportingService
         _db = db;
     }
 
-    public async Task<IReadOnlyCollection<TopCustomerDto>> GetTopCustomersAsync(decimal minimumTotal, CancellationToken ct)
+    public async Task<IReadOnlyCollection<TopCustomerDto>> GetTopCustomersAsync(decimal minimumTotal,
+        CancellationToken ct)
     {
         // TODO:
         // 1) Query all customers.
@@ -30,19 +32,30 @@ public class ReportingService : IReportingService
         // 4) Map the results to TopCustomerDto (Name, TotalAmount).
         // 5) Sort descending by TotalAmount and return as a read-only collection.
 
-        // var customers = await _customers.Query()
-        //     .AsNoTracking()
-        //     .Select(c => c.Id)
-        //     
-        //     .ToListAsync(ct);
-        //
-        // var orders = await _orders.Query()
-        //     .AsNoTracking()
-        //     .Select(o => o.Amount)
-        //     .Where(o => minimumTotal >= o)
-        //     .ToListAsync(ct);
-        
-        
+        var customersTotals =
+            _db.Orders.AsNoTracking()
+                .GroupBy(o => o.CustomerId)
+                .Select(g => new
+                {
+                    CustomerId = g.Key,
+                    Total = g.Sum(x => x.Amount)
+                });
+
+        var result = await
+            _db.Customers.AsNoTracking()
+                .Join(
+                    customersTotals,
+                    c => c.Id,
+                    o => o.CustomerId,
+                    (c, o) => new { c, o }
+                )
+                .Where(x => x.o.Total >= minimumTotal)
+                .OrderByDescending(x => x.o.Total)
+                .Select(x => new TopCustomerDto(x.c.Name, x.o.Total))
+                .ToListAsync(ct);
+
+        return result;
+
     }
 
     //  Note: the current project uses the EF Core InMemory provider,
@@ -56,15 +69,24 @@ public class ReportingService : IReportingService
         // - Group by product.
         // - Select ProductName, TotalQuantity (SUM of Quantity), TotalAmount (SUM of Amount).
         // - Order by TotalAmount DESC.
-        
-        // return await _db.Orders
-        //     .AsNoTracking()
-        //     .Include(o => o.ProductId)
-        //     .GroupBy(o => o.ProductId)
-            
-            
-            
 
-        throw new NotImplementedException();
+        var result = await _db.Products
+                .AsNoTracking()
+                .Join(
+                    _orders.Query(),
+                    p => p.Id,
+                    o => o.ProductId,
+                    (p, o) => new { p, o }
+                )
+                .GroupBy(x => new { x.p.Id, x.p.Name })
+                .Select(g => new ProductSalesDto(
+                    g.Key.Name,
+                    g.Sum(x => x.o.Quantity),
+                    g.Sum(x => x.o.Amount)
+                ))
+                .OrderByDescending(x => x.TotalAmount)
+                .ToListAsync(ct);
+
+        return result;
     }
 }
