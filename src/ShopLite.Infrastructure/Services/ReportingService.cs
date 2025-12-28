@@ -3,6 +3,7 @@ using ShopLite.Application.Interfaces;
 using ShopLite.Application.Services;
 using ShopLite.Domain.Entities;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ShopLite.Infrastructure.Services;
@@ -28,7 +29,20 @@ public class ReportingService : IReportingService
         // 3) Filter customers whose total order amount >= minimumTotal.
         // 4) Map the results to TopCustomerDto (Name, TotalAmount).
         // 5) Sort descending by TotalAmount and return as a read-only collection.
-        throw new NotImplementedException();
+
+        // var customers = await _customers.Query()
+        //     .AsNoTracking()
+        //     .Select(c => c.Id)
+        //     
+        //     .ToListAsync(ct);
+        //
+        // var orders = await _orders.Query()
+        //     .AsNoTracking()
+        //     .Select(o => o.Amount)
+        //     .Where(o => minimumTotal >= o)
+        //     .ToListAsync(ct);
+        
+        
     }
 
     //  Note: the current project uses the EF Core InMemory provider,
@@ -42,6 +56,14 @@ public class ReportingService : IReportingService
         // - Group by product.
         // - Select ProductName, TotalQuantity (SUM of Quantity), TotalAmount (SUM of Amount).
         // - Order by TotalAmount DESC.
+        
+        // return await _db.Orders
+        //     .AsNoTracking()
+        //     .Include(o => o.ProductId)
+        //     .GroupBy(o => o.ProductId)
+            
+            
+            
 
         throw new NotImplementedException();
     }

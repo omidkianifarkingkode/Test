@@ -23,6 +23,15 @@ public class GlobalExceptionHandlingMiddleware
         // Requirements:
         // - Wrap _next(context) in try/catch.
         // - On exception, log it and call HandleExceptionAsync.
+        try
+        {
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
 
         throw new NotImplementedException();
     }
